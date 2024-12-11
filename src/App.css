@@ -1,38 +1,99 @@
-.App {
-  text-align: center;
+.board {
+  display: grid;
+  grid-template-columns: repeat(10, 30px);
+  grid-template-rows: repeat(10, 30px);
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.cell {
+  width: 30px;
+  height: 30px;
+  border: 1px solid grey;
+  box-sizing: border-box;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+h1 {
+  color: rgb(79, 79, 163);
+}
+
+h2 {
+  color: rgb(58, 158, 108);
+}
+
+.ready-opponent {
+  color: rgb(58, 158, 108);
+  padding: 2px;
+  padding-inline: 0;
+  font-size: 23px;
+  font-weight: 600;
+}
+
+button {
+  margin-top: 10px;
+  display: flex;
+  gap: 3px;
+  border-radius: 10px;
+  height: 30px;
+  width: 100px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.main-lobby-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-top: 100px;
+  margin: 100px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.main-lobby-container input {
+  width: 300px;
+  border-radius: 10px;
+  height: 20px;
+  padding: 10px;
+}
+
+.main-lobby-container button {
+  border-radius: 10px;
+  height: 30px;
+  width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button-items {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.link-lobby-player {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-top: 10px;
+}
+
+.game-boards {
+  display: flex;
+  gap: 70px;
+  margin-left: 5px;
+}
+
+.board-header {
+  margin-top: 6px;
+  margin-right: 6px;
+}
+
+button {
+  border: none;
+  box-shadow: 1px 3px 1px 1px;
 }
