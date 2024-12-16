@@ -8,6 +8,7 @@ import React, {
 
 interface WebSocketContextType {
   ws: WebSocket | null;
+  activeLobbies: string[];
 }
 
 export const WebSocketContext = createContext<WebSocketContextType | undefined>(
@@ -21,8 +22,8 @@ export const WebSocketProvider: React.FC<{ children: ReactNode }> = ({
   const ws = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    const socket = new WebSocket("ws://localhost:4000/");
-    // const socket = new WebSocket("https://3bba-146-120-165-243.ngrok-free.app");
+    const socket = new WebSocket("ws://localhost:4000");
+    // const socket = new WebSocket("https://57fd-146-120-165-195.ngrok-free.app");
     socket.onopen = () => {
       const message = { payload: " " };
       socket.send(JSON.stringify(message));

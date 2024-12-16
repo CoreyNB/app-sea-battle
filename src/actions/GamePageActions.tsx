@@ -36,7 +36,7 @@ export const placeShip = (
     placedShipsCount.myShips[size] >=
     ships.find((ship) => ship.size === size).count
   ) {
-    alert("This ship is not selectable");
+    alert("The game is on");
     return false;
   }
 
@@ -196,7 +196,9 @@ export const handleButtonClick = (
   ready: boolean,
   currentPlayer: number,
   dispatch: Dispatch,
-  placedShipsCount: any
+  placedShipsCount: any,
+  ws: any,
+  setGameOngoing: unknown
 ) => {
   if (!gameStarted) {
     dispatch({ type: "START_GAME" });
