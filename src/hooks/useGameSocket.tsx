@@ -81,7 +81,7 @@ const useGameSocket = (
           }
         } else if (data.event === "win") {
           const winnerName = data.payload.winner;
-          setWinnerMessage(`${winnerName} WINNER`);
+          setWinnerMessage(`"${winnerName}" WINNER`);
           const history = JSON.parse(
             localStorage.getItem("gameHistory") || "[]"
           );

@@ -74,6 +74,9 @@ const gameReducer = (state = initialState, action: any): GameState => {
         placedShipsCount,
       };
 
+    case ActionTypesEnum.RESET_GAME:
+      return { ...initialState };
+
     case ActionTypesEnum.SET_MY_BOARD:
       return { ...state, myBoard: action.payload };
 

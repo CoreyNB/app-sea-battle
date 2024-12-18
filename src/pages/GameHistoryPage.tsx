@@ -21,7 +21,7 @@ const HistoryPage = () => {
     let topPlayer: string | null = null;
     let maxWins = 0;
     for (const [player, wins] of Object.entries(stats)) {
-      if (wins > maxWins) {
+      if (wins > maxWins && wins >= 2) {
         maxWins = wins;
         topPlayer = player;
       }
@@ -37,7 +37,7 @@ const HistoryPage = () => {
       {bestPlayer && (
         <div>
           <span>
-            <span className="lider">Best Player</span>: {bestPlayer} (Wins:{" "}
+            <span className="leader">Best Player</span>: {bestPlayer} (Wins:{" "}
             {playerStats[bestPlayer]})
           </span>
         </div>
@@ -46,17 +46,24 @@ const HistoryPage = () => {
         <p>No games played!</p>
       ) : (
         <div className="result-items">
-          <p>Total Games: {totalGames}</p>
-          <div>
-            {Object.entries(playerStats).map(([player, wins]) => (
-              <span key={player}>
-                <p>Winner</p>
-                <p>
-                  Name: {player} (Wins: {wins})
-                </p>
-              </span>
-            ))}
-          </div>
+          <table className="stats-table">
+            <thead>
+              <tr>
+                <th>Game</th>
+                <th>Winner</th>
+                <th>Wins</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.entries(playerStats).map(([player, wins], index) => (
+                <tr key={player}>
+                  <td>{index + 1}</td>
+                  <td>{player}</td>
+                  <td>{wins}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>

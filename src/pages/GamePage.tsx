@@ -52,6 +52,7 @@ const GamePage = () => {
   };
 
   const handleBackToLobby = () => {
+    dispatch(GameActions.resetGame());
     navigate("/");
   };
 

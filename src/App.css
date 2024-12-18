@@ -15,7 +15,8 @@
 }
 
 h1 {
-  color: rgb(79, 79, 163);
+  color: #b81414;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 h2 {
@@ -72,6 +73,7 @@ button {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  padding-top: 10px;
 }
 
 .link-lobby-player {
@@ -109,10 +111,13 @@ li {
 }
 
 .link-lobby {
-  color: rgb(79, 79, 163);
+  color: #b81414;
   font-size: 25px;
   cursor: pointer;
   padding-top: 20px;
+  font-weight: 600;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
 }
 
 .item-lobby {
@@ -122,7 +127,34 @@ li {
   align-items: center;
 }
 
-.lider {
+.leader {
   font-size: 20px;
   font-weight: 600;
+  color: #b81414;
+}
+.join-action {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.result-items {
+  padding-top: 20px;
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.stats-table thead {
+  background-color: #b81414;
+  color: white;
+}
+
+.stats-table th,
+.stats-table td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
 }

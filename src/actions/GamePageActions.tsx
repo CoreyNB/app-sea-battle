@@ -209,6 +209,10 @@ export const handleButtonClick = (
   }
 };
 
+export const resetGame = () => ({
+  type: "RESET_GAME",
+});
+
 const allShipsPlaced = (player: number, placedShipsCount: any) => {
   if (
     !placedShipsCount ||

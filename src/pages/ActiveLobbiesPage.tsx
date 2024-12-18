@@ -1,15 +1,12 @@
 import React, { useContext } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { WebSocketContext } from "../context/WsContext.tsx";
 
 const ActiveLobbiesPage = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const { ws } = useContext(WebSocketContext);
+  const { ws, activeLobbies } = useContext(WebSocketContext);
 
-  const { activeLobbies } = location.state || {};
-
-  const handleJoinLobby = (code) => {
+  const handleJoinLobby = (code: string) => {
     if (code && ws) {
       ws.send(
         JSON.stringify({
@@ -24,20 +21,37 @@ const ActiveLobbiesPage = () => {
   };
 
   return (
-    <div>
+    <div className="lobbies-page">
       <h1>Active Lobbies</h1>
-      <ul>
-        {activeLobbies ? (
-          activeLobbies.map((code) => (
-            <li key={code}>
-              {code}
-              <button onClick={() => handleJoinLobby(code)}>Join</button>
-            </li>
-          ))
-        ) : (
-          <p>No active lobbies</p>
-        )}
-      </ul>
+      {activeLobbies && activeLobbies.length > 0 ? (
+        <div className="result-items">
+          <table className="stats-table">
+            <thead>
+              <tr>
+                <th>Lobby Code</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {activeLobbies.map((code) => (
+                <tr key={code}>
+                  <td>{code}</td>
+                  <td>
+                    <span
+                      onClick={() => handleJoinLobby(code)}
+                      className="join-action"
+                    >
+                      Join the game
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <p>No active lobbies</p>
+      )}
     </div>
   );
 };
