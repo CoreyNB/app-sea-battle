@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { WebSocketContext } from "../context/WsContext.tsx";
+import { Button, TextField, Typography, Container, Box } from "@mui/material";
 
 const LobbyPage = () => {
   const [playerName, setPlayerName] = useState("");
@@ -81,53 +82,114 @@ const LobbyPage = () => {
   };
 
   return (
-    <div className="main-lobby-container">
-      <h1>🚢 Sea Battle</h1>
+    <Container maxWidth="sm" sx={{ padding: 4 }}>
+      <Typography
+        variant="h1"
+        sx={{
+          color: "primary.main",
+          textAlign: "center",
+          fontWeight: "bold",
+          fontSize: "4rem",
+          letterSpacing: "1px",
+          textShadow: "2px 2px 4px rgba(0, 0, 0, 0.2)",
+          marginBottom: 4,
+        }}
+      >
+        Sea Battle
+      </Typography>
+
       {!isLoggedIn && (
         <>
-          <input
-            type="text"
-            placeholder="Name"
+          <TextField
+            label="Name"
+            variant="outlined"
             value={playerName}
             onChange={(e) => setPlayerName(e.target.value)}
+            fullWidth
+            sx={{ mb: 2 }}
           />
-          <button onClick={handleLogin} disabled={!playerName}>
+          <Button
+            variant="contained"
+            onClick={handleLogin}
+            disabled={!playerName}
+            fullWidth
+            sx={{ mt: 2 }}
+          >
             Login
-          </button>
+          </Button>
         </>
       )}
 
       {isLoggedIn && (
-        <div className="button-items">
-          <button onClick={handleCreateLobby}>Create Lobby</button>
+        <Box sx={{ textAlign: "center" }}>
+          <Button
+            variant="contained"
+            onClick={handleCreateLobby}
+            fullWidth
+            sx={{ mb: 2 }}
+          >
+            Create Lobby
+          </Button>
+
           {lobbyUrl && (
-            <div className="item-lobby">
-              <p> URL: {lobbyUrl}</p>
-            </div>
+            <Box sx={{ mb: 2 }}>
+              <Typography
+                variant="h4"
+                sx={{
+                  color: "primary.main",
+                  fontWeight: "bold",
+                  fontSize: "1.5rem",
+                  letterSpacing: "1px",
+                  textShadow: "2px 2px 4px rgba(0, 0, 0, 0.2)",
+                }}
+              >
+                URL: {lobbyUrl}
+              </Typography>
+            </Box>
           )}
 
-          <span className="link-lobby" onClick={goToActiveLobbiesPage}>
-            Active Lobbies
-          </span>
-          <span className="link-lobby" onClick={() => navigate("/history")}>
-            Game Results
-          </span>
+          <Box sx={{ mb: 2 }}>
+            <span className="link" onClick={goToActiveLobbiesPage}>
+              Active Lobbies
+            </span>
+          </Box>
+          <Box sx={{ mb: 2 }}>
+            <span className="link" onClick={() => navigate("/history")}>
+              Game Results
+            </span>
+          </Box>
 
-          <h3>Connect Code</h3>
-          <input
-            type="text"
+          <Typography variant="h5" sx={{ mb: 2 }}>
+            Connect Code
+          </Typography>
+          <TextField
+            label="Lobby Code"
+            variant="outlined"
             value={createdLobbyCode || lobbyCode}
             onChange={(e) => setLobbyCode(e.target.value)}
+            fullWidth
+            sx={{ mb: 2 }}
           />
-          <button onClick={handleJoinLobby} disabled={!lobbyCode}>
+          <Button
+            variant="contained"
+            onClick={handleJoinLobby}
+            disabled={!lobbyCode}
+            fullWidth
+            sx={{ mb: 2 }}
+          >
             Connect
-          </button>
-          <button onClick={handleExit} className="exit-button">
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={handleExit}
+            fullWidth
+            sx={{ mb: 2 }}
+          >
             Exit
-          </button>
-        </div>
+          </Button>
+        </Box>
       )}
-    </div>
+    </Container>
   );
 };
 

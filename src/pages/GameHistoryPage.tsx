@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Typography, Button } from "@mui/material";
 
 const HistoryPage = () => {
   const [history, setHistory] = useState<{ date?: string; winner: string }[]>(
@@ -6,6 +7,8 @@ const HistoryPage = () => {
   );
   const [playerStats, setPlayerStats] = useState<Record<string, number>>({});
   const [bestPlayer, setBestPlayer] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     const storedHistory = JSON.parse(
@@ -30,16 +33,48 @@ const HistoryPage = () => {
   }, []);
 
   const totalGames = history.length;
+  const totalPages = Math.ceil(
+    Object.entries(playerStats).length / itemsPerPage
+  );
+
+  const currentStats = Object.entries(playerStats).slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const PreviousPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  const NextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
 
   return (
     <div className="history-page">
-      <h1>Game Results</h1>
+      <Typography
+        sx={{
+          color: "primary.main",
+          fontWeight: "bold",
+          fontSize: "2rem",
+          letterSpacing: "1px",
+          textShadow: "2px 2px 4px rgba(0, 0, 0, 0.2)",
+          marginBottom: 4,
+        }}
+      >
+        Game Results
+      </Typography>
       {bestPlayer && (
         <div>
-          <span>
-            <span className="leader">Best Player</span>: {bestPlayer} (Wins:{" "}
-            {playerStats[bestPlayer]})
-          </span>
+          <Typography
+            sx={{
+              color: "primary.main",
+              fontSize: "2rem",
+              marginBottom: 4,
+            }}
+          >
+            Best Player: {bestPlayer} (Wins: {playerStats[bestPlayer]})
+          </Typography>
         </div>
       )}
       {totalGames === 0 ? (
@@ -55,7 +90,7 @@ const HistoryPage = () => {
               </tr>
             </thead>
             <tbody>
-              {Object.entries(playerStats).map(([player, wins], index) => (
+              {currentStats.map(([player, wins], index) => (
                 <tr key={player}>
                   <td>{index + 1}</td>
                   <td>{player}</td>
@@ -64,6 +99,25 @@ const HistoryPage = () => {
               ))}
             </tbody>
           </table>
+          <div className="pagination">
+            <Button
+              onClick={PreviousPage}
+              disabled={currentPage === 1}
+              sx={{ mb: 2 }}
+            >
+              Previous
+            </Button>
+            <span>
+              {currentPage} / {totalPages}
+            </span>
+            <Button
+              onClick={NextPage}
+              disabled={currentPage === totalPages}
+              sx={{ mb: 2 }}
+            >
+              Next
+            </Button>
+          </div>
         </div>
       )}
     </div>

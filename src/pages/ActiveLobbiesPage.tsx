@@ -1,10 +1,22 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { WebSocketContext } from "../context/WsContext.tsx";
+import { Button } from "@mui/material";
 
 const ActiveLobbiesPage = () => {
   const navigate = useNavigate();
   const { ws, activeLobbies } = useContext(WebSocketContext);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3;
+
+  const totalLobbies = activeLobbies.length;
+  const totalPages = Math.ceil(totalLobbies / itemsPerPage);
+
+  const currentLobbies = activeLobbies.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const handleJoinLobby = (code: string) => {
     if (code && ws) {
@@ -20,6 +32,14 @@ const ActiveLobbiesPage = () => {
     }
   };
 
+  const previousPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  const nextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
   return (
     <div className="lobbies-page">
       <h1>Active Lobbies</h1>
@@ -33,7 +53,7 @@ const ActiveLobbiesPage = () => {
               </tr>
             </thead>
             <tbody>
-              {activeLobbies.map((code) => (
+              {currentLobbies.map((code) => (
                 <tr key={code}>
                   <td>{code}</td>
                   <td>
@@ -48,6 +68,25 @@ const ActiveLobbiesPage = () => {
               ))}
             </tbody>
           </table>
+          <div className="pagination">
+            <Button
+              onClick={previousPage}
+              disabled={currentPage === 1}
+              sx={{ mb: 2 }}
+            >
+              Previous
+            </Button>
+            <span>
+              {currentPage} / {totalPages}
+            </span>
+            <Button
+              onClick={nextPage}
+              disabled={currentPage === totalPages}
+              sx={{ mb: 2 }}
+            >
+              Next
+            </Button>
+          </div>
         </div>
       ) : (
         <p>No active lobbies</p>

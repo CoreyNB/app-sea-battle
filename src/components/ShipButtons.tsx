@@ -1,5 +1,6 @@
 import React from "react";
 import { Ship, ships } from "../interface/ShipInterface.tsx";
+import { Button } from "@mui/material";
 
 interface ShipButtonsProps {
   placedShipsCount: any;
@@ -19,7 +20,7 @@ const ShipButtons: React.FC<ShipButtonsProps> = ({
   return (
     <div>
       {ships.map((ship) => (
-        <button
+        <Button
           key={ship.size}
           onClick={() =>
             placedShipsCount.myShips[ship.size] < ship.count &&
@@ -30,9 +31,26 @@ const ShipButtons: React.FC<ShipButtonsProps> = ({
             placedShipsCount.myShips[ship.size] >= ship.count ||
             !!winner
           }
+          variant="outlined"
+          color="primary"
+          sx={{
+            display: "flex",
+            marginTop: "10px",
+            marginBottom: "8px",
+            width: "50%",
+            textAlign: "center",
+            borderRadius: "8px",
+            fontWeight: "bold",
+            textTransform: "none",
+            transition: "all 0.3s ease",
+            "&:hover": {
+              transform: "scale(1.1)",
+              backgroundColor: "rgba(0, 123, 255, 0.1)",
+            },
+          }}
         >
           {ship.size} 🚢 {placedShipsCount.myShips[ship.size]} / {ship.count}
-        </button>
+        </Button>
       ))}
     </div>
   );

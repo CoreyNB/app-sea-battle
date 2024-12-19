@@ -11,6 +11,7 @@ import { shoot } from "../utils/shootUtils.tsx";
 import ShipButtons from "../components/ShipButtons.tsx";
 import { placeShip } from "../utils/shipActions.tsx";
 import { handleButtonClick } from "../utils/gamePageUtils.tsx";
+import { Button, Typography } from "@mui/material";
 
 const GamePage = () => {
   const dispatch = useDispatch();
@@ -58,18 +59,20 @@ const GamePage = () => {
 
   return (
     <div>
-      <h1>Sea Battle</h1>
+      <Typography variant="h3" gutterBottom color="primary.main" align="center">
+        Sea Battle
+      </Typography>
       {winnerMessage && (
         <div className="game-over-message">
-          <h2>{winnerMessage}</h2>
+          <Typography variant="h4">{winnerMessage}</Typography>
         </div>
       )}
 
-      <div className="game-boards">
-        <div className="my-board">
-          <h3>
-            "{playerName}"{currentPlayer === 1 && " (Shoots first)"}
-          </h3>
+      <div className="game-boards" style={{ display: "flex" }}>
+        <div className="my-board" style={{ marginRight: "20px" }}>
+          <Typography variant="h5">
+            "{playerName}" {currentPlayer === 1 && " (Shoots first)"}
+          </Typography>
           {myBoard && (
             <BattleBoard
               board={myBoard}
@@ -110,26 +113,28 @@ const GamePage = () => {
                 gameStarted={gameStarted}
                 winner={winner}
               />
-              <button
+              <Button
+                variant="outlined"
                 onClick={toggleOrientation}
                 style={{
-                  fontSize: "20px",
+                  fontSize: "10px",
                   backgroundColor: isOrientation
                     ? "rgb(194, 194, 224)"
                     : "white",
+                  marginTop: "5px",
                 }}
               >
                 🔄
-              </button>
+              </Button>
             </div>
           )}
         </div>
 
         <div className="opponent-board">
-          <h3>
+          <Typography variant="h5">
             "{opponentName || "Opponent"}"
             {currentPlayer === 2 && " (Shoots first)"}
-          </h3>
+          </Typography>
           {opponentBoard && (
             <BattleBoard
               board={opponentBoard}
@@ -154,7 +159,8 @@ const GamePage = () => {
       </div>
 
       {!winner && (
-        <button
+        <Button
+          variant="contained"
           onClick={() =>
             handleButtonClick(
               gameStarted,
@@ -167,13 +173,33 @@ const GamePage = () => {
             )
           }
           disabled={hasShot || winner}
+          style={{
+            marginTop: "30px",
+            display: "block",
+            width: "100px",
+            margin: "auto",
+          }}
         >
           START
-        </button>
+        </Button>
       )}
 
-      {winnerMessage && <button onClick={handleBackToLobby}>Lobby</button>}
+      {winnerMessage && (
+        <Button
+          variant="outlined"
+          onClick={handleBackToLobby}
+          style={{
+            marginTop: "10px",
+            display: "block",
+            width: "200px",
+            margin: "auto",
+          }}
+        >
+          Lobby
+        </Button>
+      )}
     </div>
   );
 };
+
 export default GamePage;
