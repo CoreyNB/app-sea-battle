@@ -91,6 +91,9 @@ const useGameSocket = (
           history.push(gameResult);
           localStorage.setItem("gameHistory", JSON.stringify(history));
         }
+        if (data.event === "alert") {
+          alert(data.payload.message);
+        }
       };
     }
   }, [

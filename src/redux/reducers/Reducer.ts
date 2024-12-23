@@ -100,7 +100,7 @@ const gameReducer = (state = initialState, action: any): GameState => {
         ].map((row, rowIndex) =>
           row.map((cell, colIndex) =>
             rowIndex === action.payload.x && colIndex === action.payload.y
-              ? { ...cell, status: "hit", label: { name: "hit", logo: "💥" } }
+              ? { ...cell, status: "hit", label: { name: "hit", logo: "❌" } }
               : cell
           )
         ),

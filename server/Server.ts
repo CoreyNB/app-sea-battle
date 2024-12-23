@@ -6,6 +6,7 @@ import {
   saveShips,
   handleReady,
   broadcast,
+  getGameHistory,
 } from "./gameActions";
 
 const games: Record<string, any> = {};
@@ -15,16 +16,52 @@ function start() {
   const wss = new WebSocket.Server({ port: 4000 });
 
   wss.on("connection", (wsClient: GameClientI) => {
-    wsClient.send(
-      JSON.stringify({
-        type: "activeLobbies",
-        payload: activeLobbies,
-      })
-    );
-
-    wsClient.on("message", (message: { toString: () => string }) => {
+    wsClient.on("message", async (message: { toString: () => string }) => {
       try {
         const req = JSON.parse(message.toString());
+
+        if (req.event === "getGameHistory") {
+          const { page, itemsPerPage } = req.payload;
+
+          const { history, totalPages } = await getGameHistory(
+            page,
+            itemsPerPage
+          );
+
+          wsClient.send(
+            JSON.stringify({
+              event: "gameHistory",
+              payload: {
+                history,
+                totalPages,
+                currentPage: page,
+              },
+            })
+          );
+        }
+
+        if (req.event === "getActiveLobbies") {
+          const { page, itemsPerPage } = req.payload;
+
+          const totalLobbies = activeLobbies.length;
+          const totalPages = Math.ceil(totalLobbies / itemsPerPage);
+          const startIndex = (page - 1) * itemsPerPage;
+          const lobbiesToSend = activeLobbies.slice(
+            startIndex,
+            startIndex + itemsPerPage
+          );
+
+          wsClient.send(
+            JSON.stringify({
+              event: "activeLobbies",
+              payload: {
+                lobbies: lobbiesToSend,
+                totalPages,
+                currentPage: page,
+              },
+            })
+          );
+        }
 
         if (req.event === "connect") {
           wsClient.nickname = req.payload.username;
@@ -51,7 +88,14 @@ function start() {
         }
 
         broadcast(req, games);
-      } catch (error) {}
+      } catch (error) {
+        wsClient.send(
+          JSON.stringify({
+            event: "error",
+            payload: { message: "Internal server error" },
+          })
+        );
+      }
     });
   });
 }

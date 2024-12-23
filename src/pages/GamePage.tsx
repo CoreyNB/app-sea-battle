@@ -64,11 +64,16 @@ const GamePage = () => {
       </Typography>
       {winnerMessage && (
         <div className="game-over-message">
-          <Typography variant="h4">{winnerMessage}</Typography>
+          <Typography variant="h4" align="center">
+            {winnerMessage}
+          </Typography>
         </div>
       )}
 
-      <div className="game-boards" style={{ display: "flex" }}>
+      <div
+        className="game-boards"
+        style={{ display: "flex", paddingTop: "10px" }}
+      >
         <div className="my-board" style={{ marginRight: "20px" }}>
           <Typography variant="h5">
             "{playerName}" {currentPlayer === 1 && " (Shoots first)"}
@@ -157,47 +162,48 @@ const GamePage = () => {
           )}
         </div>
       </div>
+      <div style={{ display: "flex", marginTop: "10px" }}>
+        {!winner && (
+          <Button
+            variant="contained"
+            onClick={() =>
+              handleButtonClick(
+                gameStarted,
+                ready,
+                currentPlayer,
+                dispatch,
+                placedShipsCount,
+                ws,
+                setGameOngoing
+              )
+            }
+            disabled={hasShot || winner}
+            style={{
+              marginTop: "30px",
+              display: "block",
+              width: "100px",
+              margin: "auto",
+            }}
+          >
+            START
+          </Button>
+        )}
 
-      {!winner && (
-        <Button
-          variant="contained"
-          onClick={() =>
-            handleButtonClick(
-              gameStarted,
-              ready,
-              currentPlayer,
-              dispatch,
-              placedShipsCount,
-              ws,
-              setGameOngoing
-            )
-          }
-          disabled={hasShot || winner}
-          style={{
-            marginTop: "30px",
-            display: "block",
-            width: "100px",
-            margin: "auto",
-          }}
-        >
-          START
-        </Button>
-      )}
-
-      {winnerMessage && (
-        <Button
-          variant="outlined"
-          onClick={handleBackToLobby}
-          style={{
-            marginTop: "10px",
-            display: "block",
-            width: "200px",
-            margin: "auto",
-          }}
-        >
-          Lobby
-        </Button>
-      )}
+        {winnerMessage && (
+          <Button
+            variant="outlined"
+            onClick={handleBackToLobby}
+            style={{
+              marginTop: "10px",
+              display: "block",
+              width: "100px",
+              margin: "auto",
+            }}
+          >
+            Lobby
+          </Button>
+        )}
+      </div>
     </div>
   );
 };

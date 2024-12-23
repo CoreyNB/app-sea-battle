@@ -29,7 +29,7 @@ const LobbyPage = () => {
     const code = Math.random().toString(36).substring(2, 8).toUpperCase();
     setCreatedLobbyCode(code);
     setLobbyCode(code);
-    setLobbyUrl(`http://192.168.88.244:3000`);
+    setLobbyUrl(`http://192.168.88.249:3000`);
 
     if (ws) {
       ws.send(

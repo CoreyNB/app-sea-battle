@@ -1,107 +1,131 @@
-import React, { useEffect, useState } from "react";
-import { Typography, Button } from "@mui/material";
+import React, { useContext, useState, useEffect } from "react";
+import { WebSocketContext } from "../context/WsContext.tsx";
+import { Button } from "@mui/material";
 
 const HistoryPage = () => {
-  const [history, setHistory] = useState<{ date?: string; winner: string }[]>(
-    []
-  );
-  const [playerStats, setPlayerStats] = useState<Record<string, number>>({});
-  const [bestPlayer, setBestPlayer] = useState<string | null>(null);
+  const { ws } = useContext(WebSocketContext);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+  const [totalPages, setTotalPages] = useState(1);
+  const [history, setHistory] = useState<any[]>([]);
+  const [bestPlayer, setBestPlayer] = useState<{
+    name: string;
+    wins: number;
+  } | null>(null);
 
   useEffect(() => {
-    const storedHistory = JSON.parse(
-      localStorage.getItem("gameHistory") || "[]"
-    );
-    setHistory(storedHistory);
-
-    const stats: Record<string, number> = {};
-    storedHistory.forEach((game: { winner: string }) => {
-      stats[game.winner] = (stats[game.winner] || 0) + 1;
-    });
-    setPlayerStats(stats);
-    let topPlayer: string | null = null;
-    let maxWins = 0;
-    for (const [player, wins] of Object.entries(stats)) {
-      if (wins > maxWins && wins >= 2) {
-        maxWins = wins;
-        topPlayer = player;
-      }
+    if (ws) {
+      ws.send(
+        JSON.stringify({
+          event: "getGameHistory",
+          payload: { page: currentPage, itemsPerPage },
+        })
+      );
     }
-    setBestPlayer(topPlayer);
-  }, []);
+  }, [currentPage, ws]);
 
-  const totalGames = history.length;
-  const totalPages = Math.ceil(
-    Object.entries(playerStats).length / itemsPerPage
-  );
+  useEffect(() => {
+    const handleMessage = (message: string) => {
+      try {
+        const data = JSON.parse(message);
+        if (data.event === "gameHistory") {
+          setHistory(data.payload.history);
+          setTotalPages(data.payload.totalPages);
 
-  const currentStats = Object.entries(playerStats).slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+          const playerWins: Record<string, number> = {};
 
-  const PreviousPage = () => {
+          data.payload.history.forEach((game: any) => {
+            Object.entries(game.stats).forEach(
+              ([player, stats]: [string, any]) => {
+                playerWins[player] = (playerWins[player] || 0) + stats.wins;
+              }
+            );
+          });
+
+          const bestPlayerName = Object.keys(playerWins).reduce(
+            (bestPlayer, player) => {
+              if (playerWins[player] > (playerWins[bestPlayer] || 0)) {
+                return player;
+              }
+              return bestPlayer;
+            },
+            ""
+          );
+
+          setBestPlayer({
+            name: bestPlayerName,
+            wins: playerWins[bestPlayerName] || 0,
+          });
+        }
+      } catch (error) {}
+    };
+
+    if (ws) {
+      ws.onmessage = (event) => handleMessage(event.data);
+    }
+
+    return () => {
+      if (ws) {
+        ws.onmessage = null;
+      }
+    };
+  }, [ws]);
+
+  const previousPage = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
 
-  const NextPage = () => {
+  const nextPage = () => {
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
 
   return (
     <div className="history-page">
-      <Typography
-        sx={{
-          color: "primary.main",
-          fontWeight: "bold",
-          fontSize: "2rem",
-          letterSpacing: "1px",
-          textShadow: "2px 2px 4px rgba(0, 0, 0, 0.2)",
-          marginBottom: 4,
-        }}
-      >
-        Game Results
-      </Typography>
+      <h1>Game History</h1>
       {bestPlayer && (
-        <div>
-          <Typography
-            sx={{
-              color: "primary.main",
-              fontSize: "2rem",
-              marginBottom: 4,
-            }}
-          >
-            Best Player: {bestPlayer} (Wins: {playerStats[bestPlayer]})
-          </Typography>
+        <div className="best-player">
+          <h3>
+            Best Player: "{bestPlayer.name}" Wins:({bestPlayer.wins})
+          </h3>
         </div>
       )}
-      {totalGames === 0 ? (
-        <p>No games played!</p>
-      ) : (
+      {history.length > 0 ? (
         <div className="result-items">
           <table className="stats-table">
             <thead>
               <tr>
-                <th>Game</th>
                 <th>Winner</th>
+                <th>Date</th>
+                <th>Games Played</th>
                 <th>Wins</th>
               </tr>
             </thead>
             <tbody>
-              {currentStats.map(([player, wins], index) => (
-                <tr key={player}>
-                  <td>{index + 1}</td>
-                  <td>{player}</td>
-                  <td>{wins}</td>
+              {history.map((game, index) => (
+                <tr key={index}>
+                  <td>{game.winner}</td>
+                  <td>{new Date(game.date).toLocaleString()}</td>
+                  <td>
+                    {Object.entries(game.stats).map(([player, stats]) => (
+                      <div key={player}>
+                        <span>{stats.games}</span>
+                      </div>
+                    ))}
+                  </td>
+                  <td>
+                    {Object.entries(game.stats).map(([player, stats]) => (
+                      <div key={player}>
+                        <span>{stats.wins}</span>
+                      </div>
+                    ))}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
           <div className="pagination">
             <Button
-              onClick={PreviousPage}
+              onClick={previousPage}
               disabled={currentPage === 1}
               sx={{ mb: 2 }}
             >
@@ -111,7 +135,7 @@ const HistoryPage = () => {
               {currentPage} / {totalPages}
             </span>
             <Button
-              onClick={NextPage}
+              onClick={nextPage}
               disabled={currentPage === totalPages}
               sx={{ mb: 2 }}
             >
@@ -119,6 +143,8 @@ const HistoryPage = () => {
             </Button>
           </div>
         </div>
+      ) : (
+        <p>No game history</p>
       )}
     </div>
   );

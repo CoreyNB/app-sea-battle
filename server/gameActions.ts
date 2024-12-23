@@ -1,4 +1,7 @@
 import { GameClientI } from "./clientHandler";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 interface GameState {
   clients: GameClientI[];
@@ -6,6 +9,11 @@ interface GameState {
   ships: Record<string, any>;
   shoots: Record<string, { x: number; y: number; hit: boolean }[]>;
   currentPlayer: number;
+  gameHistory: {
+    winner: string;
+    date: string;
+    stats: Record<string, { games: number; wins: number }>;
+  }[];
 }
 
 export function initGames(
@@ -20,6 +28,7 @@ export function initGames(
       ships: {},
       shoots: {},
       currentPlayer: 0,
+      gameHistory: [],
     };
   }
 
@@ -140,7 +149,28 @@ export function handleReady(
   });
 }
 
-export function handleShoot(
+export async function saveGameHistory(
+  winner: string,
+  gameStats: Record<string, { games: number; wins: number }>
+) {
+  const gameHistory = await prisma.gameHistory.create({
+    data: {
+      winner,
+      stats: gameStats,
+      playerStats: {
+        create: Object.entries(gameStats).map(([player, stats]) => ({
+          player,
+          games: stats.games,
+          wins: stats.wins,
+        })),
+      },
+    },
+  });
+
+  return gameHistory;
+}
+
+export async function handleShoot(
   payload: { x: number; y: number; isOpponent: boolean },
   ws: GameClientI,
   gameId: string,
@@ -222,6 +252,27 @@ export function handleShoot(
         })
       );
     });
+
+    const gameHistory = game.gameHistory || (game.gameHistory = []);
+    const winner = ws.nickname;
+
+    const stats =
+      gameHistory.find((entry) => entry.winner === winner)?.stats || {};
+
+    if (stats[winner]) {
+      stats[winner].wins += 1;
+    } else {
+      stats[winner] = { games: 1, wins: 1 };
+    }
+
+    gameHistory.push({
+      winner,
+      date: new Date().toISOString(),
+      stats,
+    });
+
+    await saveGameHistory(winner, stats);
+
     return;
   }
 
@@ -237,7 +288,34 @@ export function handleShoot(
         })
       );
     });
+
+    const opponent = game.clients[opponentIndex];
+    if (opponent) {
+      opponent.send(
+        JSON.stringify({
+          event: "alert",
+          payload: { message: "Your turn" },
+        })
+      );
+    }
   }
+}
+
+export async function getGameHistory(page: number, itemsPerPage: number) {
+  const gameHistory = await prisma.gameHistory.findMany({
+    skip: (page - 1) * itemsPerPage,
+    take: itemsPerPage,
+    include: {
+      playerStats: true,
+    },
+  });
+
+  const totalGames = await prisma.gameHistory.count();
+
+  return {
+    history: gameHistory,
+    totalPages: Math.ceil(totalGames / itemsPerPage),
+  };
 }
 
 export function broadcast(

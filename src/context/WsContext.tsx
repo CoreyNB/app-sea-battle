@@ -25,7 +25,7 @@ export const WebSocketProvider: React.FC<{ children: ReactNode }> = ({
 
   useEffect(() => {
     const socket = new WebSocket("ws://localhost:4000");
-    // const socket = new WebSocket("https://5b47-146-120-165-106.ngrok-free.app");
+    // const socket = new WebSocket("https://9c7d-146-120-165-149.ngrok-free.app");
     socket.onopen = () => {
       const message = { payload: " " };
       socket.send(JSON.stringify(message));

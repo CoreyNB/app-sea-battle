@@ -12,7 +12,7 @@ const BoardComponent = ({ cell, handleAction, canShoot }) => {
       style={{ backgroundColor: cell.label ? cell.label.color : "white" }}
     >
       {cell.label?.logo ? (
-        <div>{cell.label.logo}</div>
+        <div>{cell.label?.logo}</div>
       ) : (
         <div>
           {cell.label?.name === "miss"
